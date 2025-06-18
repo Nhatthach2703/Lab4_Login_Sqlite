@@ -1,12 +1,15 @@
 package com.nhatthach.lab4_login_sqlite.adapter;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,6 +42,31 @@ public class TaskInfoAdapter extends RecyclerView.Adapter<TaskInfoAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolderInfo holder, int position) {
         holder.tvContent.setText(list.get(position).getContent());
         holder.tvDate.setText(list.get(position).getDate());
+
+        if (list.get(position).getStatus() == 1) {
+            holder.chkTask.setChecked(true);
+            holder.tvContent.setPaintFlags(holder.tvContent.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            holder.chkTask.setChecked(false);
+            holder.tvContent.setPaintFlags(holder.tvContent.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+        }
+
+        holder.chkTask.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                int id = list.get(holder.getAdapterPosition()).getId();
+                boolean checkRS = taskInfoDAO.updateTypeInfo(id, holder.chkTask.isChecked());
+
+                if (checkRS) {
+                    Toast.makeText(context, "Update successful", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "Update failed", Toast.LENGTH_SHORT).show();
+                }
+                list.clear();
+                list = taskInfoDAO.getListInfo();
+                notifyDataSetChanged();
+            }
+        });
     }
 
     @Override

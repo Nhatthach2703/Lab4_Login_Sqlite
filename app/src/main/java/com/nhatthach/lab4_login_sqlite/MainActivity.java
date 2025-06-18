@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
     public void initGUI() {
         rcvTask = findViewById(R.id.rcvTask);
 
-        edId = findViewById(R.id.edId);
+//        edId = findViewById(R.id.edId);
         edTitle = findViewById(R.id.edTitle);
         edContent = findViewById(R.id.edContent);
         edDate = findViewById(R.id.edDate);
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void reset() {
-        edId.setText("");
+//        edId.setText("");
         edTitle.setText("");
         edContent.setText("");
         edDate.setText("");

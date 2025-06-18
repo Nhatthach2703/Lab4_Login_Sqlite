@@ -10,12 +10,12 @@
     android:paddingEnd="15dp"
     tools:context=".MainActivity">
     
-    <EditText
-        android:id="@+id/edId"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="ID"
-        android:inputType="text"/>
+<!--    <EditText-->
+<!--        android:id="@+id/edId"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:hint="ID"-->
+<!--        android:inputType="text"/>-->
 
     <EditText
         android:id="@+id/edTitle"
