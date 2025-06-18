@@ -11,7 +11,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.nhatthach.lab4_login_sqlite.adapter.TaskInfoAdapter;
 import com.nhatthach.lab4_login_sqlite.dao.TaskInfoDAO;
 import com.nhatthach.lab4_login_sqlite.model.TaskInfo;
 
@@ -22,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
     TaskInfoDAO dao;
     ArrayList<TaskInfo> listTask;
     String TAG = "//=====";
+    RecyclerView rcvTask;
+    TaskInfoAdapter adapter;
     Button btnList;
     public String username = "";
     public String password = "";
@@ -43,8 +48,19 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
 
+        initGUI();
+
         dao = new TaskInfoDAO(this);
         listTask = dao.getListInfo();
         Log.d(TAG, "onCreate: " + listTask.size());
+
+        adapter = new TaskInfoAdapter(MainActivity.this, listTask);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        rcvTask.setLayoutManager(linearLayoutManager);
+        rcvTask.setAdapter(adapter);
+    }
+
+    public void initGUI() {
+        rcvTask = findViewById(R.id.rcvTask);
     }
 }
