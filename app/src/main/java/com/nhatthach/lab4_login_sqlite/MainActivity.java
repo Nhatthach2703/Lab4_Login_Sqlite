@@ -3,6 +3,7 @@ package com.nhatthach.lab4_login_sqlite;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
@@ -11,8 +12,16 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.nhatthach.lab4_login_sqlite.dao.TaskInfoDAO;
+import com.nhatthach.lab4_login_sqlite.model.TaskInfo;
+
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
+    TaskInfoDAO dao;
+    ArrayList<TaskInfo> listTask;
+    String TAG = "//=====";
     Button btnList;
     public String username = "";
     public String password = "";
@@ -33,5 +42,9 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
         }
+
+        dao = new TaskInfoDAO(this);
+        listTask = dao.getListInfo();
+        Log.d(TAG, "onCreate: " + listTask.size());
     }
 }

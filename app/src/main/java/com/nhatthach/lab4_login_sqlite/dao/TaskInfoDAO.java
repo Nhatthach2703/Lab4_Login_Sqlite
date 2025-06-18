@@ -74,7 +74,7 @@ public class TaskInfoDAO {
                 } while (cursor.moveToNext());
             }
         } catch (Exception e) {
-            Log.e("Error", e.getMessage())
+            Log.e("Error", e.getMessage());
         }
         return list;
     }
