@@ -63,12 +63,15 @@ public class TaskInfoAdapter extends RecyclerView.Adapter<TaskInfoAdapter.ViewHo
 
                 if (checkRS) {
                     Toast.makeText(context, "Update successful", Toast.LENGTH_SHORT).show();
+                    // Cập nhật đối tượng hiện tại thay vì làm mới toàn bộ danh sách
+                    int pos = holder.getAdapterPosition();
+                    if (pos != RecyclerView.NO_POSITION) {
+                        list.get(pos).setStatus(isChecked ? 1 : 0);
+                        notifyItemChanged(pos);
+                    }
                 } else {
                     Toast.makeText(context, "Update failed", Toast.LENGTH_SHORT).show();
                 }
-                list.clear();
-                list = taskInfoDAO.getListInfo();
-                notifyDataSetChanged();
             }
         });
 
@@ -138,10 +141,9 @@ public class TaskInfoAdapter extends RecyclerView.Adapter<TaskInfoAdapter.ViewHo
 
                 if (result > 0) {
                     Toast.makeText(context, "Task updated successfully", Toast.LENGTH_SHORT).show();
-                    // Refresh the list
-                    list.clear();
-                    list.addAll(taskInfoDAO.getListInfo());
-                    notifyDataSetChanged();
+                    // Cập nhật danh sách một cách an toàn
+                    ArrayList<TaskInfo> newList = taskInfoDAO.getListInfo();
+                    updateData(newList);
                 } else {
                     Toast.makeText(context, "Failed to update task", Toast.LENGTH_SHORT).show();
                 }
@@ -171,10 +173,9 @@ public class TaskInfoAdapter extends RecyclerView.Adapter<TaskInfoAdapter.ViewHo
 
                 if (result) {
                     Toast.makeText(context, "Task deleted successfully", Toast.LENGTH_SHORT).show();
-                    // Refresh the list
-                    list.clear();
-                    list.addAll(taskInfoDAO.getListInfo());
-                    notifyDataSetChanged();
+                    // Cập nhật danh sách một cách an toàn
+                    ArrayList<TaskInfo> newList = taskInfoDAO.getListInfo();
+                    updateData(newList);
                 } else {
                     Toast.makeText(context, "Failed to delete task", Toast.LENGTH_SHORT).show();
                 }
@@ -190,6 +191,13 @@ public class TaskInfoAdapter extends RecyclerView.Adapter<TaskInfoAdapter.ViewHo
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    // Thêm phương thức cập nhật danh sách an toàn
+    public void updateData(ArrayList<TaskInfo> newList) {
+        list.clear();
+        list.addAll(newList);
+        notifyDataSetChanged();
     }
 
     @Override
