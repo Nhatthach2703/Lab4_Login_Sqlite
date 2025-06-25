@@ -6,10 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingStart="15dp"
-    android:paddingEnd="15dp"
     tools:context=".MainActivity">
-    
+
 <!--    <EditText-->
 <!--        android:id="@+id/edId"-->
 <!--        android:layout_width="match_parent"-->
@@ -17,69 +15,105 @@
 <!--        android:hint="ID"-->
 <!--        android:inputType="text"/>-->
 
-    <EditText
-        android:id="@+id/edTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Title"
-        android:inputType="text"/>
-
-    <EditText
-        android:id="@+id/edContent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Content"
-        android:inputType="text"/>
-
-    <EditText
-        android:id="@+id/edDate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Date (dd/mm/yyyy)"
-        android:focusable="false"
-        android:clickable="true"
-        android:inputType="none"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Type:"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="4dp"/>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@android:color/darker_gray"
-        android:padding="1dp">
+        android:orientation="vertical"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:paddingTop="10dp">
 
-        <Spinner
-            android:id="@+id/spinnerType"
+        <EditText
+            android:id="@+id/edTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="48dp"
-            android:background="@android:color/white"
-            android:padding="8dp"
-            android:layout_marginBottom="0dp"/>
-    </LinearLayout>
+            android:hint="Title"
+            android:inputType="text"/>
 
-    <Button
-        android:id="@+id/btnAdd"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Add"
-        android:textSize="20sp"
-        android:layout_marginTop="5dp"
-        />
+        <EditText
+            android:id="@+id/edContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Content"
+            android:inputType="text"/>
+
+        <EditText
+            android:id="@+id/edDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Date (dd/mm/yyyy)"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Complexity:"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="4dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@android:color/darker_gray"
+            android:padding="1dp">
+
+            <Spinner
+                android:id="@+id/spinnerType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:background="@android:color/white"
+                android:padding="8dp"
+                android:layout_marginBottom="0dp"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnAdd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add"
+            android:textSize="20sp"
+            android:layout_marginTop="5dp"
+            />
+
+        <!-- Thêm phần giao diện bộ lọc -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Complexity: "
+                android:textStyle="bold"
+                android:layout_gravity="center_vertical"
+                android:textSize="16sp"/>
+
+            <Spinner
+                android:id="@+id/spinnerFilter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcvTask"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"/>
 
 
 

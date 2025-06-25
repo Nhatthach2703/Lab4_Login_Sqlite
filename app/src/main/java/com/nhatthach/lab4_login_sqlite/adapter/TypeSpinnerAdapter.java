@@ -49,17 +49,20 @@ public class TypeSpinnerAdapter extends ArrayAdapter<String> {
 
         label.setText(types[position]);
 
-        // Đặt màu sắc khác nhau cho từng mức độ ưu tiên
-        switch (position) {
-            case 0: // easy
-                colorIndicator.setBackgroundColor(Color.parseColor("#4CAF50")); // Màu xanh lá
-                break;
-            case 1: // medium
-                colorIndicator.setBackgroundColor(Color.parseColor("#FFC107")); // Màu vàng
-                break;
-            case 2: // hard
-                colorIndicator.setBackgroundColor(Color.parseColor("#F44336")); // Màu đỏ
-                break;
+        // Đặt màu sắc phù hợp dựa vào text của item thay vì vị trí
+        String type = types[position];
+        if (type.equalsIgnoreCase("All")) {
+            // "All" không có màu (trong suốt)
+            colorIndicator.setBackgroundColor(Color.TRANSPARENT);
+        } else if (type.equalsIgnoreCase("easy")) {
+            // "easy" màu xanh lá
+            colorIndicator.setBackgroundColor(Color.parseColor("#4CAF50"));
+        } else if (type.equalsIgnoreCase("medium")) {
+            // "medium" màu vàng
+            colorIndicator.setBackgroundColor(Color.parseColor("#FFC107"));
+        } else if (type.equalsIgnoreCase("hard")) {
+            // "hard" màu đỏ
+            colorIndicator.setBackgroundColor(Color.parseColor("#F44336"));
         }
 
         return row;

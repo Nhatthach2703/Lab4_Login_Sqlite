@@ -250,6 +250,15 @@ public class TaskInfoAdapter extends RecyclerView.Adapter<TaskInfoAdapter.ViewHo
         datePickerDialog.show();
     }
 
+    // Interface callback để MainActivity biết khi xóa thành công
+    public interface OnTaskChangedListener {
+        void onTaskDeleted();
+    }
+    private OnTaskChangedListener onTaskChangedListener;
+    public void setOnTaskChangedListener(OnTaskChangedListener listener) {
+        this.onTaskChangedListener = listener;
+    }
+
     private void showDeleteConfirmationDialog(int taskId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Delete Task");
@@ -262,9 +271,9 @@ public class TaskInfoAdapter extends RecyclerView.Adapter<TaskInfoAdapter.ViewHo
 
                 if (result) {
                     Toast.makeText(context, "Task deleted successfully", Toast.LENGTH_SHORT).show();
-                    // Cập nhật danh sách một cách an toàn
-                    ArrayList<TaskInfo> newList = taskInfoDAO.getListInfo();
-                    updateData(newList);
+                    if (onTaskChangedListener != null) {
+                        onTaskChangedListener.onTaskDeleted();
+                    }
                 } else {
                     Toast.makeText(context, "Failed to delete task", Toast.LENGTH_SHORT).show();
                 }

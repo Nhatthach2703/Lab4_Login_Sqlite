@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -25,15 +26,17 @@ public class MainActivity extends AppCompatActivity {
 
     TaskInfoDAO dao;
     ArrayList<TaskInfo> listTask;
+    ArrayList<TaskInfo> filteredList; // Danh sách đã được lọc
     String TAG = "//=====";
     RecyclerView rcvTask;
     TaskInfoAdapter adapter;
     EditText edId, edTitle, edContent, edDate;
-    Spinner spinnerType;
+    Spinner spinnerType, spinnerFilter; // Thêm spinnerFilter
     Button btnAdd;
     public String username = "";
     public String password = "";
     private String[] typeOptions = {"easy", "medium", "hard"};
+    private String[] filterOptions = {"All", "easy", "medium", "hard"}; // Thêm option "All" cho bộ lọc
 
     public void getDataLogin() {
         SharedPreferences sheredPreferences = getSharedPreferences("MyLogin", MODE_PRIVATE);
@@ -58,11 +61,24 @@ public class MainActivity extends AppCompatActivity {
                 R.layout.spinner_type_item, typeOptions);
         spinnerType.setAdapter(typeAdapter);
 
+        // Sử dụng TypeSpinnerAdapter cho spinnerFilter
+        TypeSpinnerAdapter filterAdapter = new TypeSpinnerAdapter(this,
+                R.layout.spinner_type_item, filterOptions);
+        spinnerFilter.setAdapter(filterAdapter);
+
         dao = new TaskInfoDAO(this);
         listTask = dao.getListInfo();
         Log.d(TAG, "onCreate: " + listTask.size());
 
-        adapter = new TaskInfoAdapter(MainActivity.this, listTask);
+        adapter = new TaskInfoAdapter(MainActivity.this, new ArrayList<>());
+        adapter.setOnTaskChangedListener(new TaskInfoAdapter.OnTaskChangedListener() {
+            @Override
+            public void onTaskDeleted() {
+                listTask = dao.getListInfo();
+                String selectedFilter = filterOptions[spinnerFilter.getSelectedItemPosition()];
+                filterList(selectedFilter);
+            }
+        });
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         rcvTask.setLayoutManager(linearLayoutManager);
         rcvTask.setAdapter(adapter);
@@ -95,13 +111,31 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Insert successful", Toast.LENGTH_SHORT).show();
                     }
                     listTask = dao.getListInfo();
-                    adapter = new TaskInfoAdapter(MainActivity.this, listTask);
-                    rcvTask.setLayoutManager(linearLayoutManager);
-                    rcvTask.setAdapter(adapter);
+                    String selectedFilter = filterOptions[spinnerFilter.getSelectedItemPosition()];
+                    filterList(selectedFilter);
                     reset();
                 }
             }
         });
+
+        // Lọc danh sách khi chọn mục trong spinnerFilter
+        spinnerFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedFilter = filterOptions[position];
+                filterList(selectedFilter);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Hiển thị toàn bộ danh sách nếu không có bộ lọc nào được chọn
+                adapter = new TaskInfoAdapter(MainActivity.this, listTask);
+                rcvTask.setAdapter(adapter);
+            }
+        });
+
+        listTask = dao.getListInfo();
+        filterList(filterOptions[0]); // Hiển thị All khi khởi động
     }
 
     public void initGUI() {
@@ -111,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
         edContent = findViewById(R.id.edContent);
         edDate = findViewById(R.id.edDate);
         spinnerType = findViewById(R.id.spinnerType);
+        spinnerFilter = findViewById(R.id.spinnerFilter); // Khởi tạo spinnerFilter
         btnAdd = findViewById(R.id.btnAdd);
 
         // Set up date picker dialog for date field
@@ -149,5 +184,20 @@ public class MainActivity extends AppCompatActivity {
         edContent.setText("");
         edDate.setText("");
         spinnerType.setSelection(0); // Reset spinner to first item
+        spinnerFilter.setSelection(0); // Reset spinnerFilter to first item
+    }
+
+    private void filterList(String type) {
+        filteredList = new ArrayList<>();
+        if (type.equals("All")) {
+            filteredList.addAll(listTask);
+        } else {
+            for (TaskInfo task : listTask) {
+                if (task.getType().equals(type)) {
+                    filteredList.add(task);
+                }
+            }
+        }
+        adapter.updateData(filteredList);
     }
 }
