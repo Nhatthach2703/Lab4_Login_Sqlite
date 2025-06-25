@@ -27,6 +27,15 @@ public class LoginActivity extends AppCompatActivity {
 //            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
 //            return insets;
 //        });
+
+        View rootView = findViewById(R.id.main);
+        rootView.setOnApplyWindowInsetsListener((v, insets) -> {
+            int topInset = insets.getSystemWindowInsetTop();
+            int bottomInset = insets.getSystemWindowInsetBottom();
+            v.setPadding(v.getPaddingLeft(), topInset, v.getPaddingRight(), bottomInset);
+            return insets.consumeSystemWindowInsets();
+        });
+
         edUsername = (EditText) findViewById(R.id.edUsername);
         edPassword = (EditText) findViewById(R.id.edPassword);
         btnLogin = (Button) findViewById(R.id.btnLogin);

@@ -17,10 +17,15 @@ public class DBHelper  extends SQLiteOpenHelper {
         String sSQL = "Create TABLE TASKS(ID INTEGER PRIMARY KEY AUTOINCREMENT, TITLE TEXT, CONTENT TEXT, DATE TEXT, TYPE TEXT, STATUS INTEGER)";
         db.execSQL(sSQL);
         String sSQL_insert = "INSERT INTO TASKS (ID,TITLE,CONTENT,DATE,TYPE,STATUS) VALUES " +
-                "( '1', 'Android', 'học lập trình android', '18/06/2025', 'DỄ', '0'), " +
-                "( '2', 'node', 'học lập trình node', '18/06/2025', 'Khó', '0'), " +
-                "( '3', 'c', 'học lập trình c', '18/06/2025', 'DỄ', '0'), " +
-                "( '4', 'python', 'học lập trình python', '18/06/2025', 'Khó', '1');";
+                "( '1', 'Android', 'học lập trình android', '18/06/2025', 'hard', '1'), " +
+                "( '2', 'node', 'học lập trình node', '18/06/2025', 'medium', '0'), " +
+                "( '3', 'c', 'học lập trình c', '18/06/2025', 'easy', '0'), " +
+                "( '4', 'python', 'học lập trình python', '18/06/2025', 'medium', '1')," +
+                "( '5', 'java', 'học lập trình java', '20/06/2025', 'medium', '0')," +
+                "( '6', 'c++', 'học lập trình c++', '21/06/2025', 'hard', '0')," +
+                "( '7', 'javascript', 'học lập trình javascript', '22/06/2025', 'medium', '0')," +
+                "( '8', 'AI', 'học train model AI', '23/06/2025', 'hard', '0')";
+
         db.execSQL(sSQL_insert);
     }
 

@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.nhatthach.lab4_login_sqlite.R;
 import com.nhatthach.lab4_login_sqlite.dao.TaskInfoDAO;
 import com.nhatthach.lab4_login_sqlite.model.TaskInfo;
+import com.nhatthach.lab4_login_sqlite.MainActivity;
 
 import java.util.ArrayList;
 
@@ -193,9 +194,9 @@ public class TaskInfoAdapter extends RecyclerView.Adapter<TaskInfoAdapter.ViewHo
 
                 if (result > 0) {
                     Toast.makeText(context, "Task updated successfully", Toast.LENGTH_SHORT).show();
-                    // Cập nhật danh sách một cách an toàn
-                    ArrayList<TaskInfo> newList = taskInfoDAO.getListInfo();
-                    updateData(newList);
+                    if (context instanceof MainActivity) {
+                        ((MainActivity) context).updateTask(updatedTask);
+                    }
                 } else {
                     Toast.makeText(context, "Failed to update task", Toast.LENGTH_SHORT).show();
                 }

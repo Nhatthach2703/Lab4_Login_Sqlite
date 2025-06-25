@@ -56,6 +56,14 @@ public class MainActivity extends AppCompatActivity {
 
         initGUI();
 
+        View rootView = findViewById(R.id.main);
+        rootView.setOnApplyWindowInsetsListener((v, insets) -> {
+            int topInset = insets.getSystemWindowInsetTop();
+            int bottomInset = insets.getSystemWindowInsetBottom();
+            v.setPadding(v.getPaddingLeft(), topInset, v.getPaddingRight(), bottomInset);
+            return insets.consumeSystemWindowInsets();
+        });
+
         // Sử dụng TypeSpinnerAdapter tùy chỉnh thay vì ArrayAdapter mặc định
         TypeSpinnerAdapter typeAdapter = new TypeSpinnerAdapter(this,
                 R.layout.spinner_type_item, typeOptions);
@@ -199,5 +207,30 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         adapter.updateData(filteredList);
+    }
+
+    public void refreshTaskList() {
+        listTask = dao.getListInfo();
+        filteredList = new ArrayList<>();
+        filteredList.addAll(listTask); // Always show all tasks after refresh
+        adapter.updateData(filteredList);
+        spinnerFilter.post(new Runnable() {
+            @Override
+            public void run() {
+                spinnerFilter.setSelection(0); // Reset spinner to "All" immediately
+                spinnerFilter.invalidate(); // Force UI refresh to ensure spinner updates visually
+                spinnerFilter.requestLayout(); // Ensure layout recalculates
+            }
+        });
+    }
+
+    public void updateTask(TaskInfo updatedTask) {
+        long result = dao.updateInfo(updatedTask);
+        if (result > 0) {
+            refreshTaskList();
+            Toast.makeText(this, "Task updated successfully", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Failed to update task", Toast.LENGTH_SHORT).show();
+        }
     }
 }
