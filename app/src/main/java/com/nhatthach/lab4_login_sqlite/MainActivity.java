@@ -112,6 +112,36 @@ public class MainActivity extends AppCompatActivity {
         edDate = findViewById(R.id.edDate);
         edType = findViewById(R.id.edType);
         btnAdd = findViewById(R.id.btnAdd);
+
+        // Set up date picker dialog for date field
+        edDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialog(edDate);
+            }
+        });
+    }
+
+    private void showDatePickerDialog(final EditText dateField) {
+        // Use the current date as the default date in the picker
+        final java.util.Calendar calendar = java.util.Calendar.getInstance();
+        int year = calendar.get(java.util.Calendar.YEAR);
+        int month = calendar.get(java.util.Calendar.MONTH);
+        int day = calendar.get(java.util.Calendar.DAY_OF_MONTH);
+
+        // Create a new instance of DatePickerDialog and return it
+        android.app.DatePickerDialog datePickerDialog = new android.app.DatePickerDialog(
+                MainActivity.this,
+                new android.app.DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(android.widget.DatePicker view, int year, int month, int dayOfMonth) {
+                        // Format the date as dd/mm/yyyy and set it to the EditText
+                        String formattedDate = String.format("%02d/%02d/%04d", dayOfMonth, month + 1, year);
+                        dateField.setText(formattedDate);
+                    }
+                },
+                year, month, day);
+        datePickerDialog.show();
     }
 
     public void reset() {

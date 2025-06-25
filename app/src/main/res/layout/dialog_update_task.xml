@@ -25,8 +25,10 @@
         android:id="@+id/edDateUpdate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Date"
-        android:inputType="text"
+        android:hint="Date (dd/mm/yyyy)"
+        android:focusable="false"
+        android:clickable="true"
+        android:inputType="none"
         android:layout_marginBottom="8dp"/>
 
     <EditText

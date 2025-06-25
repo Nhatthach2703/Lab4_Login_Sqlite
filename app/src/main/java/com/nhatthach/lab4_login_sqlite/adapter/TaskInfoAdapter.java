@@ -47,6 +47,9 @@ public class TaskInfoAdapter extends RecyclerView.Adapter<TaskInfoAdapter.ViewHo
         holder.tvContent.setText(currentTask.getContent());
         holder.tvDate.setText(currentTask.getDate());
 
+        // Remove the listener before setting checked state to avoid triggering it during binding
+        holder.chkTask.setOnCheckedChangeListener(null);
+
         if (currentTask.getStatus() == 1) {
             holder.chkTask.setChecked(true);
             holder.tvContent.setPaintFlags(holder.tvContent.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -55,22 +58,44 @@ public class TaskInfoAdapter extends RecyclerView.Adapter<TaskInfoAdapter.ViewHo
             holder.tvContent.setPaintFlags(holder.tvContent.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         }
 
+        // Set the listener after configuring the checkbox state
         holder.chkTask.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                int id = list.get(holder.getAdapterPosition()).getId();
-                boolean checkRS = taskInfoDAO.updateTypeInfo(id, holder.chkTask.isChecked());
-
-                if (checkRS) {
-                    Toast.makeText(context, "Update successful", Toast.LENGTH_SHORT).show();
-                    // Cập nhật đối tượng hiện tại thay vì làm mới toàn bộ danh sách
+                try {
                     int pos = holder.getAdapterPosition();
-                    if (pos != RecyclerView.NO_POSITION) {
-                        list.get(pos).setStatus(isChecked ? 1 : 0);
-                        notifyItemChanged(pos);
+                    if (pos != RecyclerView.NO_POSITION && pos < list.size()) {
+                        TaskInfo task = list.get(pos);
+                        int id = task.getId();
+
+                        // Update the database
+                        boolean checkRS = taskInfoDAO.updateTypeInfo(id, isChecked);
+
+                        if (checkRS) {
+                            // Update the model
+                            task.setStatus(isChecked ? 1 : 0);
+
+                            // Update the UI
+                            if (isChecked) {
+                                holder.tvContent.setPaintFlags(holder.tvContent.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                            } else {
+                                holder.tvContent.setPaintFlags(holder.tvContent.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                            }
+
+                            Toast.makeText(context, "Update successful", Toast.LENGTH_SHORT).show();
+                        } else {
+                            // Revert checkbox if update failed
+                            holder.chkTask.setOnCheckedChangeListener(null);
+                            holder.chkTask.setChecked(!isChecked);
+                            holder.chkTask.setOnCheckedChangeListener(this);
+
+                            Toast.makeText(context, "Update failed", Toast.LENGTH_SHORT).show();
+                        }
                     }
-                } else {
-                    Toast.makeText(context, "Update failed", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    // Log the exception and prevent app crash
+                    e.printStackTrace();
+                    Toast.makeText(context, "Error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -111,6 +136,14 @@ public class TaskInfoAdapter extends RecyclerView.Adapter<TaskInfoAdapter.ViewHo
         edContent.setText(task.getContent());
         edDate.setText(task.getDate());
         edType.setText(task.getType());
+
+        // Set up date picker dialog for the date field
+        edDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialog(edDate);
+            }
+        });
 
         // Add action buttons
         builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
@@ -159,6 +192,43 @@ public class TaskInfoAdapter extends RecyclerView.Adapter<TaskInfoAdapter.ViewHo
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    private void showDatePickerDialog(final EditText dateField) {
+        // Use the current date as the default date in the picker
+        final java.util.Calendar calendar = java.util.Calendar.getInstance();
+        int year = calendar.get(java.util.Calendar.YEAR);
+        int month = calendar.get(java.util.Calendar.MONTH);
+        int day = calendar.get(java.util.Calendar.DAY_OF_MONTH);
+
+        // If there's an existing date in the field, parse it and use it as the default
+        String currentDate = dateField.getText().toString().trim();
+        if (!currentDate.isEmpty()) {
+            try {
+                String[] parts = currentDate.split("/");
+                if (parts.length == 3) {
+                    day = Integer.parseInt(parts[0]);
+                    month = Integer.parseInt(parts[1]) - 1; // Month is 0-based in Calendar
+                    year = Integer.parseInt(parts[2]);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Create a new instance of DatePickerDialog and return it
+        android.app.DatePickerDialog datePickerDialog = new android.app.DatePickerDialog(
+                context,
+                new android.app.DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(android.widget.DatePicker view, int year, int month, int dayOfMonth) {
+                        // Format the date as dd/mm/yyyy and set it to the EditText
+                        String formattedDate = String.format("%02d/%02d/%04d", dayOfMonth, month + 1, year);
+                        dateField.setText(formattedDate);
+                    }
+                },
+                year, month, day);
+        datePickerDialog.show();
     }
 
     private void showDeleteConfirmationDialog(int taskId) {
