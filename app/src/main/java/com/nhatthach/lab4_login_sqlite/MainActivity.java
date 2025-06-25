@@ -7,17 +7,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.nhatthach.lab4_login_sqlite.adapter.TaskInfoAdapter;
+import com.nhatthach.lab4_login_sqlite.adapter.TypeSpinnerAdapter;
 import com.nhatthach.lab4_login_sqlite.dao.TaskInfoDAO;
 import com.nhatthach.lab4_login_sqlite.model.TaskInfo;
 
@@ -30,10 +28,12 @@ public class MainActivity extends AppCompatActivity {
     String TAG = "//=====";
     RecyclerView rcvTask;
     TaskInfoAdapter adapter;
-    EditText edId, edTitle, edContent, edDate, edType;
+    EditText edId, edTitle, edContent, edDate;
+    Spinner spinnerType;
     Button btnAdd;
     public String username = "";
     public String password = "";
+    private String[] typeOptions = {"easy", "medium", "hard"};
 
     public void getDataLogin() {
         SharedPreferences sheredPreferences = getSharedPreferences("MyLogin", MODE_PRIVATE);
@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         getDataLogin();
         if (username.equals("") || password.equals("")) {
@@ -53,6 +52,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         initGUI();
+
+        // Sử dụng TypeSpinnerAdapter tùy chỉnh thay vì ArrayAdapter mặc định
+        TypeSpinnerAdapter typeAdapter = new TypeSpinnerAdapter(this,
+                R.layout.spinner_type_item, typeOptions);
+        spinnerType.setAdapter(typeAdapter);
 
         dao = new TaskInfoDAO(this);
         listTask = dao.getListInfo();
@@ -69,9 +73,9 @@ public class MainActivity extends AppCompatActivity {
                 String title = edTitle.getText().toString().trim();
                 String content = edContent.getText().toString().trim();
                 String date = edDate.getText().toString().trim();
-                String type = edType.getText().toString().trim();
+                String type = spinnerType.getSelectedItem().toString();
 
-                if (title.isEmpty() || content.isEmpty() || date.isEmpty() || type.isEmpty()) {
+                if (title.isEmpty() || content.isEmpty() || date.isEmpty()) {
                     Toast.makeText(MainActivity.this, "Please input data", Toast.LENGTH_SHORT).show();
                     if (title.isEmpty()) {
                         edTitle.setError("Please enter title");
@@ -81,9 +85,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                     if (date.isEmpty()) {
                         edDate.setError("Please enter date");
-                    }
-                    if (type.isEmpty()) {
-                        edType.setError("Please enter type");
                     }
                 } else {
                     TaskInfo info = new TaskInfo(1, title, content, date, type, 0);
@@ -106,11 +107,10 @@ public class MainActivity extends AppCompatActivity {
     public void initGUI() {
         rcvTask = findViewById(R.id.rcvTask);
 
-//        edId = findViewById(R.id.edId);
         edTitle = findViewById(R.id.edTitle);
         edContent = findViewById(R.id.edContent);
         edDate = findViewById(R.id.edDate);
-        edType = findViewById(R.id.edType);
+        spinnerType = findViewById(R.id.spinnerType);
         btnAdd = findViewById(R.id.btnAdd);
 
         // Set up date picker dialog for date field
@@ -145,10 +145,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void reset() {
-//        edId.setText("");
         edTitle.setText("");
         edContent.setText("");
         edDate.setText("");
-        edType.setText("");
+        spinnerType.setSelection(0); // Reset spinner to first item
     }
 }

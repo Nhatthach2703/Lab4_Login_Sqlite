@@ -7,10 +7,12 @@ import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -129,13 +131,30 @@ public class TaskInfoAdapter extends RecyclerView.Adapter<TaskInfoAdapter.ViewHo
         EditText edTitle = dialogView.findViewById(R.id.edTitleUpdate);
         EditText edContent = dialogView.findViewById(R.id.edContentUpdate);
         EditText edDate = dialogView.findViewById(R.id.edDateUpdate);
-        EditText edType = dialogView.findViewById(R.id.edTypeUpdate);
+        Spinner spinnerType = dialogView.findViewById(R.id.spinnerTypeUpdate);
+
+        // Set up spinner with type options và sử dụng TypeSpinnerAdapter tùy chỉnh
+        String[] typeOptions = {"easy", "medium", "hard"};
+        TypeSpinnerAdapter typeAdapter = new TypeSpinnerAdapter(context,
+                R.layout.spinner_type_item, typeOptions);
+        spinnerType.setAdapter(typeAdapter);
 
         // Set current task values
         edTitle.setText(task.getTitle());
         edContent.setText(task.getContent());
         edDate.setText(task.getDate());
-        edType.setText(task.getType());
+
+        // Set the spinner selection based on the task's type
+        String currentType = task.getType();
+        int typePosition = 0; // default to "easy"
+
+        for (int i = 0; i < typeOptions.length; i++) {
+            if (typeOptions[i].equals(currentType)) {
+                typePosition = i;
+                break;
+            }
+        }
+        spinnerType.setSelection(typePosition);
 
         // Set up date picker dialog for the date field
         edDate.setOnClickListener(new View.OnClickListener() {
@@ -153,21 +172,21 @@ public class TaskInfoAdapter extends RecyclerView.Adapter<TaskInfoAdapter.ViewHo
                 String title = edTitle.getText().toString().trim();
                 String content = edContent.getText().toString().trim();
                 String date = edDate.getText().toString().trim();
-                String type = edType.getText().toString().trim();
+                String type = spinnerType.getSelectedItem().toString();
 
-                if (title.isEmpty() || content.isEmpty() || date.isEmpty() || type.isEmpty()) {
+                if (title.isEmpty() || content.isEmpty() || date.isEmpty()) {
                     Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 // Update task with new values
                 TaskInfo updatedTask = new TaskInfo(
-                    task.getId(),
-                    title,
-                    content,
-                    date,
-                    type,
-                    task.getStatus()
+                        task.getId(),
+                        title,
+                        content,
+                        date,
+                        type,
+                        task.getStatus()
                 );
 
                 long result = taskInfoDAO.updateInfo(updatedTask);
